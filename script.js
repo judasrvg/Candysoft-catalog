@@ -210,6 +210,19 @@ function clearTapState(button) {
   }, 90);
 }
 
+function scrollToGalleryStart() {
+  if (galleryOverlay.hidden) {
+    return;
+  }
+
+  window.requestAnimationFrame(() => {
+    galleryOverlay.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  });
+}
+
 function renderCategoryCards() {
   categoryCardsContainer.innerHTML = "";
 
@@ -245,6 +258,7 @@ function renderCategoryCards() {
       updateActiveCategoryCard();
       openGalleryPanel();
       renderGallery();
+      scrollToGalleryStart();
       animateCategoryOpen(card);
     });
 
