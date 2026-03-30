@@ -4,18 +4,61 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Candysoft Studio | Catálogo Fotográfico</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Plus+Jakarta+Sans:wght@500;700&display=swap"
+    rel="stylesheet"
+  />
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
+<body class="is-loading">
+  <div id="loader" class="loader-overlay" role="status" aria-live="polite" aria-label="Cargando catálogo">
+    <div class="loader-content">
+      <span class="loader-spinner" aria-hidden="true"></span>
+      <p>Cargando catálogo Candysoft...</p>
+    </div>
+  </div>
+
+  <div class="top-gradient" aria-hidden="true"></div>
+
   <header class="site-header">
-    <h1>Candysoft Studio</h1>
-    <p>Catálogo fotográfico por categoría</p>
+    <p class="header-kicker">Candysoft Studio</p>
+    <h1>Catálogo fotográfico</h1>
+    <p>Explora las sesiones por categoría y abre cada imagen en pantalla completa.</p>
   </header>
 
-  <main>
-    <nav class="filters" aria-label="Filtrar por categoría" id="category-filters"></nav>
-    <section class="gallery" id="gallery" aria-live="polite"></section>
+  <main class="site-main">
+    <section class="category-section" aria-label="Categorías">
+      <div class="section-head">
+        <h2>Categorías</h2>
+        <p>Selecciona una categoría para ver sus fotos.</p>
+      </div>
+      <div class="category-grid" id="category-cards"></div>
+    </section>
+
+    <section class="gallery-section">
+      <div class="section-head">
+        <h2 id="gallery-title">Galería</h2>
+        <p id="gallery-count"></p>
+      </div>
+      <section class="gallery" id="gallery" aria-live="polite"></section>
+      <button id="load-more" class="load-more-btn" type="button">Cargar más fotos</button>
+    </section>
   </main>
+
+  <footer class="site-footer">
+    <p>&copy; <span id="current-year"></span> Candysoft. Todos los derechos reservados.</p>
+  </footer>
+
+  <aside class="wa-widget" id="wa-widget">
+    <div class="wa-menu" id="wa-menu" aria-label="Opciones de WhatsApp"></div>
+    <button id="wa-toggle" class="wa-toggle" type="button" aria-expanded="false" aria-controls="wa-menu">
+      <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <path fill="currentColor" d="M16 2.7C8.8 2.7 2.9 8.5 2.9 15.7c0 2.5.7 5 2.1 7.1L2.5 30l7.4-2.4c2 1.1 4.2 1.7 6.5 1.7 7.2 0 13.1-5.8 13.1-13S23.2 2.7 16 2.7Zm0 23.9c-2.1 0-4.1-.6-5.9-1.7l-.4-.2-4.4 1.4 1.5-4.3-.3-.4a10.2 10.2 0 0 1-1.8-5.7c0-5.6 4.6-10.2 10.3-10.2S26.2 10 26.2 15.7 21.7 26.6 16 26.6Zm5.6-7.5c-.3-.1-1.8-.9-2.1-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-1 1.1-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.7-1.7-1-.9-1.7-2-1.9-2.3-.2-.3 0-.5.1-.6l.5-.6c.2-.2.2-.4.3-.6.1-.2 0-.4 0-.6-.1-.1-.7-1.6-.9-2.2-.2-.5-.4-.4-.7-.4h-.6c-.2 0-.6.1-.9.4s-1.2 1.2-1.2 2.9c0 1.7 1.3 3.4 1.5 3.6.2.2 2.5 3.8 6 5.3.8.3 1.4.5 1.9.7.8.2 1.5.2 2 .1.6-.1 1.8-.7 2.1-1.4.2-.7.2-1.3.2-1.4 0-.1-.2-.2-.5-.3Z"></path>
+      </svg>
+    </button>
+  </aside>
 
   <dialog id="lightbox" class="lightbox" aria-label="Vista completa de fotografía">
     <button id="lightbox-close" class="lightbox-close" aria-label="Cerrar vista completa">×</button>
