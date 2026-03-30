@@ -2,7 +2,8 @@ const categoryCardsContainer = document.getElementById("category-cards");
 const galleryContainer = document.getElementById("gallery");
 const galleryTitle = document.getElementById("gallery-title");
 const galleryCount = document.getElementById("gallery-count");
-const gallerySection = document.querySelector(".gallery-section");
+const galleryOverlay = document.getElementById("gallery-overlay");
+const galleryClose = document.getElementById("gallery-close");
 const loadMoreBtn = document.getElementById("load-more");
 const lightbox = document.getElementById("lightbox");
 const lightboxImage = document.getElementById("lightbox-image");
@@ -25,10 +26,17 @@ const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
 const INITIAL_BATCH_SIZE = prefersDataSaving ? 4 : 8;
 const BATCH_SIZE = prefersDataSaving ? 4 : 8;
 const IMAGE_OBSERVER_MARGIN = "180px 0px";
+const GALLERY_OPEN_MS = 300;
+const GALLERY_CLOSE_MS = 200;
+const AUTO_OPEN_SCROLL_THRESHOLD = 18;
+const AUTO_OPEN_COOLDOWN_MS = 420;
 
 let selectedCategory = categories[0] || "";
 let visibleCount = INITIAL_BATCH_SIZE;
 let imageObserver = null;
+let galleryCloseTimer = null;
+let lastGalleryCloseAt = 0;
+let touchStartY = null;
 
 function getCategoryLabel(category) {
   if (categoryLabels[category]) {
@@ -56,6 +64,81 @@ function updateActiveCategoryCard() {
     card.classList.toggle("active", isActive);
     card.setAttribute("aria-pressed", String(isActive));
   });
+}
+
+function isGalleryOpen() {
+  return !galleryOverlay.hidden;
+}
+
+function cleanupGalleryPanel() {
+  if (imageObserver) {
+    imageObserver.disconnect();
+  }
+
+  galleryContainer.innerHTML = "";
+  galleryCount.textContent = "";
+  loadMoreBtn.hidden = true;
+  galleryOverlay.hidden = true;
+  galleryOverlay.classList.remove("is-opening", "is-closing");
+  document.body.classList.remove("gallery-open");
+  lastGalleryCloseAt = Date.now();
+}
+
+function openGalleryPanel() {
+  if (galleryCloseTimer) {
+    window.clearTimeout(galleryCloseTimer);
+    galleryCloseTimer = null;
+  }
+
+  if (isGalleryOpen()) {
+    galleryOverlay.classList.remove("is-closing");
+    document.body.classList.add("gallery-open");
+    return;
+  }
+
+  galleryOverlay.hidden = false;
+  galleryOverlay.classList.remove("is-closing");
+  void galleryOverlay.offsetWidth;
+  galleryOverlay.classList.add("is-opening");
+  document.body.classList.add("gallery-open");
+
+  window.setTimeout(() => {
+    galleryOverlay.classList.remove("is-opening");
+  }, GALLERY_OPEN_MS);
+}
+
+function closeGalleryPanel() {
+  if (!isGalleryOpen()) {
+    return;
+  }
+
+  if (galleryCloseTimer) {
+    window.clearTimeout(galleryCloseTimer);
+  }
+
+  galleryOverlay.classList.remove("is-opening");
+  galleryOverlay.classList.add("is-closing");
+
+  galleryCloseTimer = window.setTimeout(() => {
+    cleanupGalleryPanel();
+    galleryCloseTimer = null;
+  }, GALLERY_CLOSE_MS);
+}
+
+function openSelectedGalleryFromScroll() {
+  const now = Date.now();
+
+  if (isGalleryOpen() || lightbox.open) {
+    return;
+  }
+
+  if (now - lastGalleryCloseAt < AUTO_OPEN_COOLDOWN_MS) {
+    return;
+  }
+
+  closeWhatsAppMenu();
+  openGalleryPanel();
+  renderGallery();
 }
 
 function setupImageObserver() {
@@ -115,6 +198,16 @@ function onGalleryImageLoaded(event) {
 
 function onGalleryImageError(event) {
   const image = event.currentTarget;
+  const fallbackSrc = image.dataset.fallbackSrc;
+  const fallbackTried = image.dataset.fallbackTried === "true";
+
+  if (fallbackSrc && !fallbackTried) {
+    image.dataset.fallbackTried = "true";
+    image.dataset.state = "loading";
+    image.src = fallbackSrc;
+    return;
+  }
+
   image.dataset.state = "error";
   const card = image.closest(".photo-card");
   card?.classList.add("is-loaded");
@@ -174,12 +267,9 @@ function renderCategoryCards() {
       selectedCategory = category;
       visibleCount = INITIAL_BATCH_SIZE;
       updateActiveCategoryCard();
+      openGalleryPanel();
       renderGallery();
       animateCategoryOpen(card);
-
-      if (window.innerWidth < 768) {
-        gallerySection?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
     });
 
     categoryCardsContainer.appendChild(card);
@@ -272,9 +362,12 @@ function renderGallery() {
     image.decoding = "async";
     image.fetchPriority = index < 2 ? "high" : "low";
     image.dataset.src = photo.thumb || photo.src;
+    if (photo.thumb && photo.src && photo.thumb !== photo.src) {
+      image.dataset.fallbackSrc = photo.src;
+    }
 
     image.addEventListener("load", onGalleryImageLoaded, { once: true });
-    image.addEventListener("error", onGalleryImageError, { once: true });
+    image.addEventListener("error", onGalleryImageError);
 
     const skeleton = document.createElement("span");
     skeleton.className = "photo-skeleton";
@@ -319,6 +412,68 @@ loadMoreBtn.addEventListener("click", () => {
   renderGallery();
 });
 
+galleryClose.addEventListener("click", closeGalleryPanel);
+galleryOverlay.addEventListener("pointerdown", (event) => {
+  if (event.target === galleryOverlay) {
+    closeGalleryPanel();
+  }
+});
+
+window.addEventListener(
+  "wheel",
+  (event) => {
+    if (event.deltaY > AUTO_OPEN_SCROLL_THRESHOLD) {
+      openSelectedGalleryFromScroll();
+    }
+  },
+  { passive: true }
+);
+
+window.addEventListener(
+  "touchstart",
+  (event) => {
+    if (!event.touches || event.touches.length !== 1) {
+      return;
+    }
+
+    touchStartY = event.touches[0].clientY;
+  },
+  { passive: true }
+);
+
+window.addEventListener(
+  "touchmove",
+  (event) => {
+    if (touchStartY === null || !event.touches || event.touches.length !== 1) {
+      return;
+    }
+
+    const currentY = event.touches[0].clientY;
+    const delta = touchStartY - currentY;
+    if (delta > AUTO_OPEN_SCROLL_THRESHOLD) {
+      openSelectedGalleryFromScroll();
+      touchStartY = currentY;
+    }
+  },
+  { passive: true }
+);
+
+window.addEventListener(
+  "touchend",
+  () => {
+    touchStartY = null;
+  },
+  { passive: true }
+);
+
+window.addEventListener(
+  "touchcancel",
+  () => {
+    touchStartY = null;
+  },
+  { passive: true }
+);
+
 waToggle.addEventListener("click", (event) => {
   event.stopPropagation();
   waWidget.classList.toggle("open");
@@ -346,6 +501,8 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     if (lightbox.open) {
       closeLightbox();
+    } else if (isGalleryOpen()) {
+      closeGalleryPanel();
     }
 
     closeWhatsAppMenu();
@@ -361,6 +518,6 @@ window.addEventListener("load", () => {
 setupImageObserver();
 buildWhatsAppMenu();
 renderCategoryCards();
-renderGallery();
+loadMoreBtn.hidden = true;
 
 currentYear.textContent = String(new Date().getFullYear());

@@ -69,6 +69,10 @@ const rawCatalog = {
     "_DSC8574B.jpg"
   ],
   pareja: [
+    "_DSC2601.jpg",
+    "_DSC2682.jpg",
+    "_DSC5978B.jpg",
+    "_DSC8806.jpg"
   ]
 };
 
