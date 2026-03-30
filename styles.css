@@ -139,6 +139,19 @@ body:not(.is-loading) .loader-overlay {
   gap: 1.25rem;
 }
 
+.site-header,
+.site-main,
+.site-footer {
+  will-change: filter;
+  transition: filter 0.2s ease;
+}
+
+body.is-scrolling .site-header,
+body.is-scrolling .site-main,
+body.is-scrolling .site-footer {
+  filter: blur(1.6px) saturate(0.95);
+}
+
 .category-section,
 .gallery-section {
   background: var(--surface);
@@ -556,6 +569,20 @@ body:not(.is-loading) .loader-overlay {
 
   100% {
     transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header,
+  .site-main,
+  .site-footer {
+    transition: none;
+  }
+
+  body.is-scrolling .site-header,
+  body.is-scrolling .site-main,
+  body.is-scrolling .site-footer {
+    filter: none;
   }
 }
 
