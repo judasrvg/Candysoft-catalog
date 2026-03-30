@@ -22,7 +22,6 @@ const WHATSAPP_GREETING = "Hola CandySoft,";
 
 const prefersDataSaving = Boolean(navigator.connection && navigator.connection.saveData);
 const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
-const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const INITIAL_BATCH_SIZE = prefersDataSaving ? 4 : 8;
 const BATCH_SIZE = prefersDataSaving ? 4 : 8;
 const IMAGE_OBSERVER_MARGIN = "180px 0px";
@@ -30,7 +29,6 @@ const IMAGE_OBSERVER_MARGIN = "180px 0px";
 let selectedCategory = categories[0] || "";
 let visibleCount = INITIAL_BATCH_SIZE;
 let imageObserver = null;
-let scrollBlurTimer = null;
 
 function getCategoryLabel(category) {
   if (categoryLabels[category]) {
@@ -191,7 +189,6 @@ function renderCategoryCards() {
 }
 
 function openLightbox(src, alt) {
-  document.body.classList.remove("is-scrolling");
   lightboxImage.src = src;
   lightboxImage.alt = alt;
 
@@ -203,7 +200,6 @@ function openLightbox(src, alt) {
 }
 
 function closeLightbox() {
-  document.body.classList.remove("is-scrolling");
   if (lightbox.open && typeof lightbox.close === "function") {
     lightbox.close();
   } else {
@@ -317,22 +313,6 @@ function buildWhatsAppMenu() {
   });
 }
 
-function handleScrollBlur() {
-  if (prefersReducedMotion || lightbox.open) {
-    return;
-  }
-
-  document.body.classList.add("is-scrolling");
-
-  if (scrollBlurTimer) {
-    window.clearTimeout(scrollBlurTimer);
-  }
-
-  scrollBlurTimer = window.setTimeout(() => {
-    document.body.classList.remove("is-scrolling");
-  }, 140);
-}
-
 loadMoreBtn.addEventListener("click", () => {
   closeWhatsAppMenu();
   visibleCount += BATCH_SIZE;
@@ -371,8 +351,6 @@ document.addEventListener("keydown", (event) => {
     closeWhatsAppMenu();
   }
 });
-
-window.addEventListener("scroll", handleScrollBlur, { passive: true });
 
 window.addEventListener("load", () => {
   window.setTimeout(() => {

@@ -139,19 +139,6 @@ body:not(.is-loading) .loader-overlay {
   gap: 1.25rem;
 }
 
-.site-header,
-.site-main,
-.site-footer {
-  will-change: filter;
-  transition: filter 0.2s ease;
-}
-
-body.is-scrolling .site-header,
-body.is-scrolling .site-main,
-body.is-scrolling .site-footer {
-  filter: blur(1.6px) saturate(0.95);
-}
-
 .category-section,
 .gallery-section {
   background: var(--surface);
@@ -159,7 +146,7 @@ body.is-scrolling .site-footer {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   padding: 1.05rem;
-  backdrop-filter: blur(12px);
+  backdrop-filter: none;
 }
 
 .section-head {
@@ -285,6 +272,7 @@ body.is-scrolling .site-footer {
   background: var(--surface-strong);
   border: 1px solid rgba(255, 255, 255, 0.09);
   box-shadow: var(--shadow-md);
+  contain: layout paint;
   transform: translateY(6px);
   opacity: 0;
   animation: riseIn 0.46s ease forwards;
@@ -355,15 +343,12 @@ body.is-scrolling .site-footer {
   display: block;
   pointer-events: none;
   opacity: 0;
-  filter: blur(16px);
-  transform: scale(1.08);
-  transition: opacity 0.45s ease, transform 0.55s ease, filter 0.55s ease;
+  transform: scale(1);
+  transition: opacity 0.28s ease;
 }
 
 .photo-card.is-loaded .photo-thumb {
   opacity: 1;
-  filter: blur(0);
-  transform: scale(1);
 }
 
 .photo-card.is-loaded .photo-skeleton {
@@ -372,8 +357,7 @@ body.is-scrolling .site-footer {
 
 .photo-card button:hover .photo-thumb,
 .photo-card button:focus-visible .photo-thumb {
-  transform: scale(1.05);
-  filter: blur(0);
+  transform: scale(1.02);
 }
 
 .load-more-btn {
@@ -572,17 +556,20 @@ body.is-scrolling .site-footer {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .site-header,
-  .site-main,
-  .site-footer {
-    transition: none;
+@media (pointer: coarse) {
+  .photo-card {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 
-  body.is-scrolling .site-header,
-  body.is-scrolling .site-main,
-  body.is-scrolling .site-footer {
-    filter: none;
+  .photo-skeleton {
+    animation: none;
+    background: rgba(28, 42, 66, 0.88);
+  }
+
+  .category-card.is-opening {
+    animation: none;
   }
 }
 
@@ -608,6 +595,11 @@ body.is-scrolling .site-footer {
 @media (min-width: 1024px) {
   .site-main {
     gap: 1.4rem;
+  }
+
+  .category-section,
+  .gallery-section {
+    backdrop-filter: blur(10px);
   }
 
   .category-grid {
