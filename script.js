@@ -15,8 +15,8 @@ const waToggle = document.getElementById("wa-toggle");
 const WHATSAPP_NUMBER = "5354831128";
 const WHATSAPP_MESSAGES = [
   "Quiero saber las ofertas que tienen.",
-  "Quiero agendar una reservacion.",
-  "Quiero mas detalles sobre las sesiones."
+  "Quiero agendar una reservación.",
+  "Quiero más detalles sobre las sesiones."
 ];
 const WHATSAPP_GREETING = "Hola CandySoft,";
 
@@ -148,15 +148,19 @@ function renderCategoryCards() {
 
   categories.forEach((category) => {
     const photos = getPhotosByCategory(category);
-    const coverImage = photos[0]?.src || "";
+    const coverImage = photos[0]?.thumb || photos[0]?.src || "";
     const categoryLabel = getCategoryLabel(category);
 
     const card = document.createElement("button");
     card.type = "button";
     card.className = "category-card";
     card.dataset.category = category;
-    card.style.setProperty("--card-image", `url("${coverImage}")`);
-    card.setAttribute("aria-label", `Abrir categoria ${categoryLabel}`);
+    if (coverImage) {
+      card.style.setProperty("--card-image", `url("${coverImage}")`);
+    } else {
+      card.style.setProperty("--card-image", "linear-gradient(135deg, #304a76, #172540)");
+    }
+    card.setAttribute("aria-label", `Abrir categoría ${categoryLabel}`);
 
     const info = document.createElement("span");
     info.className = "category-info";
@@ -219,14 +223,14 @@ function renderGallery() {
     imageObserver.disconnect();
   }
 
-  galleryTitle.textContent = `Sesion ${currentCategoryLabel}`;
+  galleryTitle.textContent = `Sesión ${currentCategoryLabel}`;
   galleryCount.textContent = `${visiblePhotos.length} de ${photos.length} fotos`;
   galleryContainer.innerHTML = "";
 
   if (!photos.length) {
     const emptyText = document.createElement("p");
     emptyText.className = "empty-gallery";
-    emptyText.textContent = "No hay fotos disponibles para esta categoria.";
+    emptyText.textContent = "No hay fotos disponibles para esta categoría.";
     galleryContainer.appendChild(emptyText);
     loadMoreBtn.hidden = true;
     return;
@@ -271,7 +275,7 @@ function renderGallery() {
     image.loading = "lazy";
     image.decoding = "async";
     image.fetchPriority = index < 2 ? "high" : "low";
-    image.dataset.src = photo.src;
+    image.dataset.src = photo.thumb || photo.src;
 
     image.addEventListener("load", onGalleryImageLoaded, { once: true });
     image.addEventListener("error", onGalleryImageError, { once: true });

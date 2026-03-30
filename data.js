@@ -1,8 +1,9 @@
 const categoryLabels = {
   embarazo: "Embarazo",
-  bebe: "Bebe",
-  "1er-anito": "1er Anito",
-  "15-anos": "15 Anos"
+  bebe: "Bebé",
+  "1er-anito": "1er Añito",
+  "15-anos": "15 Años",
+  pareja: "Pareja"
 };
 
 const rawCatalog = {
@@ -66,10 +67,12 @@ const rawCatalog = {
     "_DSC7870.jpg",
     "_DSC7914.jpg",
     "_DSC8574B.jpg"
+  ],
+  pareja: [
   ]
 };
 
-const categories = ["embarazo", "bebe", "1er-anito", "15-anos"];
+const categories = ["embarazo", "bebe", "1er-anito", "15-anos", "pareja"];
 
 const photoCatalog = categories.flatMap((category) => {
   const label = categoryLabels[category] || category;
@@ -78,6 +81,7 @@ const photoCatalog = categories.flatMap((category) => {
     category,
     title: `${label} ${String(index + 1).padStart(2, "0")}`,
     src: `images/${category}/${fileName}`,
-    alt: `Sesion de ${label.toLowerCase()} - Foto ${index + 1}`
+    thumb: `thumbnails/${category}/${fileName}`,
+    alt: `Sesión de ${label.toLowerCase()} - Foto ${index + 1}`
   }));
 });
