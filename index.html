@@ -36,19 +36,18 @@
       </div>
       <div class="category-grid" id="category-cards"></div>
     </section>
-  </main>
-
-  <div id="gallery-overlay" class="gallery-overlay" hidden>
-    <section class="gallery-panel" id="gallery-panel" role="dialog" aria-modal="true" aria-label="Galería de fotos">
-      <button id="gallery-close" class="gallery-close" type="button" aria-label="Cerrar galería">×</button>
-      <div class="section-head">
-        <h2 id="gallery-title">Galería</h2>
-        <p id="gallery-count"></p>
-      </div>
-      <section class="gallery" id="gallery" aria-live="polite"></section>
-      <button id="load-more" class="load-more-btn" type="button">Cargar más fotos</button>
+    <section id="gallery-overlay" class="gallery-overlay" hidden>
+      <section class="gallery-panel" id="gallery-panel" aria-label="Galería de fotos">
+        <button id="gallery-close" class="gallery-close" type="button" aria-label="Cerrar galería">×</button>
+        <div class="section-head">
+          <h2 id="gallery-title">Galería</h2>
+          <p id="gallery-count"></p>
+        </div>
+        <section class="gallery" id="gallery" aria-live="polite"></section>
+        <button id="load-more" class="load-more-btn" type="button">Cargar más fotos</button>
+      </section>
     </section>
-  </div>
+  </main>
 
   <footer class="site-footer">
     <p>&copy; <span id="current-year"></span> Candysoft. Todos los derechos reservados.</p>

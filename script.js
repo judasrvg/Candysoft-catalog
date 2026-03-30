@@ -28,15 +28,11 @@ const BATCH_SIZE = prefersDataSaving ? 4 : 8;
 const IMAGE_OBSERVER_MARGIN = "180px 0px";
 const GALLERY_OPEN_MS = 300;
 const GALLERY_CLOSE_MS = 200;
-const AUTO_OPEN_SCROLL_THRESHOLD = 18;
-const AUTO_OPEN_COOLDOWN_MS = 420;
 
 let selectedCategory = categories[0] || "";
 let visibleCount = INITIAL_BATCH_SIZE;
 let imageObserver = null;
 let galleryCloseTimer = null;
-let lastGalleryCloseAt = 0;
-let touchStartY = null;
 
 function getCategoryLabel(category) {
   if (categoryLabels[category]) {
@@ -80,8 +76,6 @@ function cleanupGalleryPanel() {
   loadMoreBtn.hidden = true;
   galleryOverlay.hidden = true;
   galleryOverlay.classList.remove("is-opening", "is-closing");
-  document.body.classList.remove("gallery-open");
-  lastGalleryCloseAt = Date.now();
 }
 
 function openGalleryPanel() {
@@ -92,7 +86,6 @@ function openGalleryPanel() {
 
   if (isGalleryOpen()) {
     galleryOverlay.classList.remove("is-closing");
-    document.body.classList.add("gallery-open");
     return;
   }
 
@@ -100,7 +93,6 @@ function openGalleryPanel() {
   galleryOverlay.classList.remove("is-closing");
   void galleryOverlay.offsetWidth;
   galleryOverlay.classList.add("is-opening");
-  document.body.classList.add("gallery-open");
 
   window.setTimeout(() => {
     galleryOverlay.classList.remove("is-opening");
@@ -123,22 +115,6 @@ function closeGalleryPanel() {
     cleanupGalleryPanel();
     galleryCloseTimer = null;
   }, GALLERY_CLOSE_MS);
-}
-
-function openSelectedGalleryFromScroll() {
-  const now = Date.now();
-
-  if (isGalleryOpen() || lightbox.open) {
-    return;
-  }
-
-  if (now - lastGalleryCloseAt < AUTO_OPEN_COOLDOWN_MS) {
-    return;
-  }
-
-  closeWhatsAppMenu();
-  openGalleryPanel();
-  renderGallery();
 }
 
 function setupImageObserver() {
@@ -413,66 +389,6 @@ loadMoreBtn.addEventListener("click", () => {
 });
 
 galleryClose.addEventListener("click", closeGalleryPanel);
-galleryOverlay.addEventListener("pointerdown", (event) => {
-  if (event.target === galleryOverlay) {
-    closeGalleryPanel();
-  }
-});
-
-window.addEventListener(
-  "wheel",
-  (event) => {
-    if (event.deltaY > AUTO_OPEN_SCROLL_THRESHOLD) {
-      openSelectedGalleryFromScroll();
-    }
-  },
-  { passive: true }
-);
-
-window.addEventListener(
-  "touchstart",
-  (event) => {
-    if (!event.touches || event.touches.length !== 1) {
-      return;
-    }
-
-    touchStartY = event.touches[0].clientY;
-  },
-  { passive: true }
-);
-
-window.addEventListener(
-  "touchmove",
-  (event) => {
-    if (touchStartY === null || !event.touches || event.touches.length !== 1) {
-      return;
-    }
-
-    const currentY = event.touches[0].clientY;
-    const delta = touchStartY - currentY;
-    if (delta > AUTO_OPEN_SCROLL_THRESHOLD) {
-      openSelectedGalleryFromScroll();
-      touchStartY = currentY;
-    }
-  },
-  { passive: true }
-);
-
-window.addEventListener(
-  "touchend",
-  () => {
-    touchStartY = null;
-  },
-  { passive: true }
-);
-
-window.addEventListener(
-  "touchcancel",
-  () => {
-    touchStartY = null;
-  },
-  { passive: true }
-);
 
 waToggle.addEventListener("click", (event) => {
   event.stopPropagation();

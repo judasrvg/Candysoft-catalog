@@ -139,10 +139,6 @@ body:not(.is-loading) .loader-overlay {
   gap: 1.25rem;
 }
 
-body.gallery-open {
-  overflow: hidden;
-}
-
 .category-section {
   background: var(--surface);
   border: 1px solid var(--line);
@@ -157,33 +153,19 @@ body.gallery-open {
 }
 
 .gallery-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1650;
-  display: grid;
-  place-items: center;
-  padding: 0.9rem;
-  background: rgba(4, 8, 14, 0.72);
-}
-
-.gallery-overlay.is-opening {
-  animation: overlayIn 0.24s ease forwards;
-}
-
-.gallery-overlay.is-closing {
-  animation: overlayOut 0.2s ease forwards;
+  margin-top: 1rem;
 }
 
 .gallery-panel {
-  width: min(1100px, 95vw);
-  max-height: 88vh;
-  overflow: auto;
+  width: 100%;
   position: relative;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   padding: 1.1rem;
+  transform-origin: top left;
+  will-change: transform, opacity, clip-path;
 }
 
 .gallery-overlay.is-opening .gallery-panel {
@@ -622,47 +604,31 @@ body.gallery-open {
   }
 }
 
-@keyframes overlayIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes overlayOut {
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-  }
-}
-
 @keyframes panelOpen {
   from {
     opacity: 0;
-    transform: scale(0.94) translateY(20px);
+    transform: scale(0.88);
+    clip-path: inset(0 100% 100% 0 round 18px);
   }
 
   to {
     opacity: 1;
-    transform: scale(1) translateY(0);
+    transform: scale(1);
+    clip-path: inset(0 0 0 0 round 24px);
   }
 }
 
 @keyframes panelClose {
   from {
     opacity: 1;
-    transform: scale(1) translateY(0);
+    transform: scale(1);
+    clip-path: inset(0 0 0 0 round 24px);
   }
 
   to {
     opacity: 0;
-    transform: scale(0.96) translateY(12px);
+    transform: scale(0.9);
+    clip-path: inset(0 100% 100% 0 round 18px);
   }
 }
 
