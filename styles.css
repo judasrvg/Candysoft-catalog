@@ -464,20 +464,26 @@ body:not(.is-loading) .loader-overlay {
   width: min(320px, 82vw);
   display: grid;
   gap: 0.5rem;
+  max-height: 0;
+  overflow: hidden;
+  visibility: hidden;
   opacity: 0;
   transform: translateY(8px) scale(0.98);
   transform-origin: bottom right;
   pointer-events: none;
-  transition: opacity 0.22s ease, transform 0.22s ease;
+  transition: opacity 0.22s ease, transform 0.22s ease, max-height 0.22s ease, visibility 0.22s ease;
 }
 
 .wa-widget.open .wa-menu {
+  max-height: 420px;
+  visibility: visible;
   opacity: 1;
   transform: translateY(0) scale(1);
+  pointer-events: auto;
 }
 
 .wa-option {
-  pointer-events: auto;
+  pointer-events: none;
   border: 1px solid rgba(255, 255, 255, 0.16);
   background: rgba(11, 18, 30, 0.95);
   color: #f2f8ff;
@@ -488,6 +494,10 @@ body:not(.is-loading) .loader-overlay {
   line-height: 1.35;
   box-shadow: var(--shadow-md);
   transition: border-color 0.25s ease, transform 0.25s ease;
+}
+
+.wa-widget.open .wa-option {
+  pointer-events: auto;
 }
 
 .wa-option:hover,
