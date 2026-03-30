@@ -5,7 +5,7 @@ from PIL import Image, ImageOps
 ROOT = Path(__file__).resolve().parents[1]
 IMAGES_DIR = ROOT / "images"
 THUMB_DIR = ROOT / "thumbnails"
-MAX_SIZE = (560, 560)
+MAX_SIZE = (420, 420)
 JPEG_QUALITY = 72
 SUPPORTED_EXT = {".jpg", ".jpeg", ".png", ".webp"}
 
