@@ -18,8 +18,10 @@ const WHATSAPP_MESSAGES = [
   "Quiero agendar una reservacion.",
   "Quiero mas detalles sobre las sesiones."
 ];
+const WHATSAPP_GREETING = "Hola CandySoft,";
 
 const prefersDataSaving = Boolean(navigator.connection && navigator.connection.saveData);
+const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
 const INITIAL_BATCH_SIZE = prefersDataSaving ? 4 : 8;
 const BATCH_SIZE = prefersDataSaving ? 4 : 8;
 const IMAGE_OBSERVER_MARGIN = "180px 0px";
@@ -118,6 +120,27 @@ function onGalleryImageError(event) {
   card?.classList.add("is-loaded");
 }
 
+function setTapPoint(button, event) {
+  if (!event || typeof event.clientX !== "number") {
+    return;
+  }
+
+  const rect = button.getBoundingClientRect();
+  const x = ((event.clientX - rect.left) / rect.width) * 100;
+  const y = ((event.clientY - rect.top) / rect.height) * 100;
+  const clampedX = Math.max(0, Math.min(100, x));
+  const clampedY = Math.max(0, Math.min(100, y));
+
+  button.style.setProperty("--tap-x", `${clampedX}%`);
+  button.style.setProperty("--tap-y", `${clampedY}%`);
+}
+
+function clearTapState(button) {
+  window.setTimeout(() => {
+    button.classList.remove("is-pressed");
+  }, 90);
+}
+
 function renderCategoryCards() {
   categoryCardsContainer.innerHTML = "";
 
@@ -139,16 +162,11 @@ function renderCategoryCards() {
     const name = document.createElement("span");
     name.className = "category-name";
     name.textContent = categoryLabel;
-
-    const count = document.createElement("span");
-    count.className = "category-count";
-    count.textContent = `${photos.length} fotos`;
-
     info.appendChild(name);
-    info.appendChild(count);
     card.appendChild(info);
 
     card.addEventListener("click", () => {
+      closeWhatsAppMenu();
       selectedCategory = category;
       visibleCount = INITIAL_BATCH_SIZE;
       updateActiveCategoryCard();
@@ -218,7 +236,27 @@ function renderGallery() {
     const button = document.createElement("button");
     button.type = "button";
     button.setAttribute("aria-label", `Ver foto en pantalla completa: ${photo.title}`);
-    button.addEventListener("click", () => openLightbox(photo.src, photo.alt));
+    button.addEventListener("pointerdown", (event) => {
+      setTapPoint(button, event);
+      button.classList.add("is-pressed");
+    });
+    button.addEventListener("pointerup", () => clearTapState(button));
+    button.addEventListener("pointerleave", () => clearTapState(button));
+    button.addEventListener("pointercancel", () => clearTapState(button));
+    button.addEventListener("click", () => {
+      closeWhatsAppMenu();
+
+      if (isCoarsePointer) {
+        button.classList.add("is-pressed");
+        window.setTimeout(() => {
+          button.classList.remove("is-pressed");
+          openLightbox(photo.src, photo.alt);
+        }, 85);
+        return;
+      }
+
+      openLightbox(photo.src, photo.alt);
+    });
 
     const media = document.createElement("span");
     media.className = "photo-media";
@@ -241,12 +279,8 @@ function renderGallery() {
     media.appendChild(image);
     media.appendChild(skeleton);
 
-    const caption = document.createElement("figcaption");
-    caption.textContent = photo.title;
-
     button.appendChild(media);
     figure.appendChild(button);
-    figure.appendChild(caption);
     galleryContainer.appendChild(figure);
 
     observeGalleryImage(image);
@@ -266,7 +300,7 @@ function buildWhatsAppMenu() {
   WHATSAPP_MESSAGES.forEach((message) => {
     const option = document.createElement("a");
     option.className = "wa-option";
-    option.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+    option.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`${WHATSAPP_GREETING}\n${message}`)}`;
     option.target = "_blank";
     option.rel = "noopener noreferrer";
     option.textContent = message;
@@ -276,6 +310,7 @@ function buildWhatsAppMenu() {
 }
 
 loadMoreBtn.addEventListener("click", () => {
+  closeWhatsAppMenu();
   visibleCount += BATCH_SIZE;
   renderGallery();
 });
@@ -286,7 +321,11 @@ waToggle.addEventListener("click", (event) => {
   waToggle.setAttribute("aria-expanded", String(waWidget.classList.contains("open")));
 });
 
-document.addEventListener("click", (event) => {
+waToggle.addEventListener("pointerdown", (event) => {
+  event.stopPropagation();
+});
+
+document.addEventListener("pointerdown", (event) => {
   if (!waWidget.contains(event.target)) {
     closeWhatsAppMenu();
   }
