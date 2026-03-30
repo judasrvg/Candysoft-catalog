@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Candysoft Studio | Catálogo Fotográfico</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <p class="hero-kicker">Candysoft Studio</p>
+    <h1>Catálogo fotográfico elegante para momentos inolvidables</h1>
+    <p class="hero-description">
+      Descubre nuestras sesiones especializadas en maternidad, bebé, primer añito y quince años.
+      Cada galería está diseñada para reflejar la esencia de tu historia.
+    </p>
+    <div class="hero-meta">
+      <span>Fotografía editorial</span>
+      <span>Dirección creativa</span>
+      <span>Entrega premium</span>
+    </div>
+  </header>
+
+  <main class="catalog-shell">
+    <section class="catalog-header">
+      <h2>Colecciones</h2>
+      <p>Selecciona una categoría para explorar el portafolio.</p>
+    </section>
+
+    <nav class="filters" aria-label="Filtrar por categoría" id="category-filters"></nav>
+    <section class="gallery" id="gallery" aria-live="polite"></section>
+  </main>
+
+  <dialog id="lightbox" class="lightbox" aria-label="Vista completa de fotografía">
+    <button id="lightbox-close" class="lightbox-close" aria-label="Cerrar vista completa">×</button>
+    <img id="lightbox-image" src="" alt="" />
+  </dialog>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
