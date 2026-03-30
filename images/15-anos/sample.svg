@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <g>
+    <circle cx="100" cy="100" r="100" fill="#f0b2c3" />
+    <g>
+      <path d="M70 140 Q80 120 90 140 T110 140" fill="none" stroke="#000" stroke-width="2" /> <!-- Hair -->
+      <path d="M70 130 C50 80 150 80 130 130 Q110 100 90 120 Q70 100 70 130" fill="#8d5a9b" /> <!-- Hair -->
+      <rect x="80" y="90" width="40" height="50" fill="#f4a3c7" /> <!-- Dress -->
+      <ellipse cx="80" cy="120" rx="15" ry="3" fill="#f8d3e0" /> <!-- Skirt -->
+      <ellipse cx="120" cy="120" rx="15" ry="3" fill="#f8d3e0" />
+      <circle cx="100" cy="70" r="15" fill="#ffeaa5" /> <!-- Face -->
+      <circle cx="93" cy="68" r="2" fill="#000" /> <!-- Eye -->
+      <circle cx="107" cy="68" r="2" fill="#000" />
+      <path d="M93 73 Q100 80 107 73" fill="none" stroke="#000" stroke-width="1" /> <!-- Smile -->
+      <g style="fill:gold;">
+        <circle cx="87" cy="55" r="4" /> <!-- Accessory -->
+        <circle cx="113" cy="55" r="4" />
+      </g>
+    </g>
+  </g>
+</svg>
