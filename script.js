@@ -3,21 +3,8 @@ const galleryContainer = document.getElementById("gallery");
 const lightbox = document.getElementById("lightbox");
 const lightboxImage = document.getElementById("lightbox-image");
 const lightboxClose = document.getElementById("lightbox-close");
-const resultsCounter = document.getElementById("results-counter");
-
-const categoryLabels = {
-  todas: "Todas",
-  embarazo: "Embarazo",
-  bebe: "Bebé",
-  "1er-anito": "1er añito",
-  "15-anos": "15 años"
-};
 
 let selectedCategory = "embarazo";
-
-function formatCategory(category) {
-  return categoryLabels[category] || category;
-}
 
 function createFilters() {
   const allCategories = ["todas", ...categories];
@@ -26,7 +13,7 @@ function createFilters() {
     const button = document.createElement("button");
     button.className = "filter-btn";
     button.type = "button";
-    button.textContent = formatCategory(category);
+    button.textContent = category;
     button.dataset.category = category;
 
     if (category === selectedCategory) {
@@ -76,14 +63,8 @@ function renderGallery() {
   const photos = getFilteredPhotos();
   galleryContainer.innerHTML = "";
 
-  const label = selectedCategory === "todas" ? "todas las categorías" : formatCategory(selectedCategory);
-  resultsCounter.textContent = `${photos.length} fotografías en ${label}`;
-
   if (!photos.length) {
-    const emptyState = document.createElement("p");
-    emptyState.className = "empty-state";
-    emptyState.textContent = "No hay fotografías disponibles para esta categoría por el momento.";
-    galleryContainer.appendChild(emptyState);
+    galleryContainer.innerHTML = "<p>No hay fotos para esta categoría.</p>";
     return;
   }
 
@@ -102,17 +83,7 @@ function renderGallery() {
     image.loading = "lazy";
 
     const caption = document.createElement("figcaption");
-
-    const title = document.createElement("span");
-    title.className = "photo-title";
-    title.textContent = photo.title;
-
-    const category = document.createElement("span");
-    category.className = "photo-category";
-    category.textContent = formatCategory(photo.category);
-
-    caption.appendChild(title);
-    caption.appendChild(category);
+    caption.textContent = `${photo.title} · ${photo.category}`;
 
     openButton.appendChild(image);
     figure.appendChild(openButton);
